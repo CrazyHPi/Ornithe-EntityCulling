@@ -15,6 +15,9 @@ repositories {
 //    maven { url 'https://jitpack.io' }
     // self-hosted maven
     maven { url 'https://fastdl.crazyh.fun/maven/' }
+
+	// occlusionculling
+	maven {url "https://repo.codemc.io/repository/maven-public/"}
 }
 
 loom {
@@ -46,12 +49,17 @@ dependencies {
 
     // mappings,could be mcp as well
     // feather
-	mappings ploceus.featherMappings(project.feather_build)
+//	mappings ploceus.featherMappings(project.feather_build)
     // mcp 1.12 stable 39
-//    mappings ploceus.mcpMappings("stable", "1.12", "39")
+    mappings ploceus.mcpMappings("stable", "1.12", "39")
+
+	// occlusionculling
+	include(implementation "com.logisticscraft:occlusionculling:${project.occlusionculling_version}")
 
     // osl, if needed
 //	ploceus.dependOsl(project.osl_version)
+	ploceus.dependOslModule(project.osl_version, "entrypoints")
+	ploceus.dependOslModule(project.osl_version, "keybinds")
 }
 
 processResources {
