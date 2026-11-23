@@ -1,0 +1,27 @@
+{
+	"schemaVersion": 1,
+	"id": "example_mod",
+	"version": "${version}",
+	"name": "Example mod",
+	"description": "A template for ornithe mod loader.",
+	"authors": [
+		"CrazyH"
+	],
+	"contact": {
+		"homepage": "https://github.com/CrazyHPi/ornithe-template",
+		"sources": "https://github.com/CrazyHPi/ornithe-template"
+	},
+	"license": "LGPL-3.0-or-later",
+	"icon": "assets/example/icon.png",
+	"environment": "*",
+	"entrypoints": {
+      "preLaunch" : ["xyz.crazyh.example.ExampleMod::init"]
+	},
+	"mixins": [
+		"example_mod.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.13.3",
+		"minecraft": "1.12.2"
+    }
+}
