@@ -4,13 +4,15 @@
   "package": "dev.tr7zw.entityculling.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "CullableMixin"
+    "CullableMixin",
+    "event.MinecraftServerMixin"
   ],
   "client": [
     "BlockEntityRenderDispatcherMixin",
     "DebugHudMixin",
     "EntityRendererMixin",
-    "WorldRendererMixin"
+    "WorldRendererMixin",
+    "event.MinecraftMixin"
   ],
   "server": [
   ],

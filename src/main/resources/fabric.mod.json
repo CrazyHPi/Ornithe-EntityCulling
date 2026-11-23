@@ -16,6 +16,9 @@
 	"icon": "assets/example/icon.png",
 	"environment": "*",
 	"entrypoints": {
+		"client-init": [
+			"dev.tr7zw.entityculling.EntityCullingMod"
+		]
 	},
 	"mixins": [
 		"entityculling.mixins.json"

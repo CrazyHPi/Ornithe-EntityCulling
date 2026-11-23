@@ -58,6 +58,7 @@ dependencies {
 
     // osl, if needed
 //	ploceus.dependOsl(project.osl_version)
+	ploceus.dependOslModule(project.osl_version, "core")
 	ploceus.dependOslModule(project.osl_version, "entrypoints")
 	ploceus.dependOslModule(project.osl_version, "keybinds")
 }

@@ -3,6 +3,7 @@ package dev.tr7zw.entityculling;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.logisticscraft.occlusionculling.OcclusionCullingInstance;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.settings.KeyBinding;
@@ -26,7 +27,7 @@ public abstract class EntityCullingModBase {
     protected boolean pressed = false;
 	
     public Config config;
-    private final File settingsFile = new File("config", "entityculling.json");
+    private final File settingsFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), "entityculling.json");
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	
 	//stats
@@ -72,6 +73,7 @@ public abstract class EntityCullingModBase {
         if (settingsFile.exists())
             settingsFile.delete();
         try {
+            settingsFile.getParentFile().mkdirs();
             Files.write(settingsFile.toPath(), gson.toJson(config).getBytes(StandardCharsets.UTF_8));
         } catch (IOException e1) {
             e1.printStackTrace();
@@ -105,5 +107,4 @@ public abstract class EntityCullingModBase {
     }
 
     public abstract void initModloader();
-	
 }
