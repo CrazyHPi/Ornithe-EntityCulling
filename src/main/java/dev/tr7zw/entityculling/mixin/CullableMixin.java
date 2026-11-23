@@ -1,6 +1,6 @@
 package dev.tr7zw.entityculling.mixin;
 
-import dev.tr7zw.entityculling.EntityCullingModBase;
+import dev.tr7zw.entityculling.EntityCullingMod;
 import dev.tr7zw.entityculling.access.Cullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
@@ -33,7 +33,7 @@ public class CullableMixin implements Cullable {
 
 	@Override
 	public boolean isCulled() {
-		if(!EntityCullingModBase.enabled)return false;
+		if(!EntityCullingMod.enabled)return false;
 		return culled;
 	}
 
@@ -44,7 +44,7 @@ public class CullableMixin implements Cullable {
 
     @Override
     public boolean isOutOfCamera() {
-        if(!EntityCullingModBase.enabled)return false;
+        if(!EntityCullingMod.enabled)return false;
         return outOfCamera;
     }
 

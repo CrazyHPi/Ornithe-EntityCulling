@@ -2,6 +2,7 @@ package dev.tr7zw.entityculling.mixin.event;
 
 import dev.tr7zw.entityculling.EntityCullingMod;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.main.GameConfiguration;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -9,6 +10,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Minecraft.class)
 public abstract class MinecraftMixin {
+    @Inject(method = "<init>", at = @At("RETURN"))
+    private void initEntityCulling(GameConfiguration gameConfiguration, CallbackInfo ci) {
+        EntityCullingMod.instance.onInitialize();
+    }
+
     @Inject(
             method = "runTick",
             at = @At(

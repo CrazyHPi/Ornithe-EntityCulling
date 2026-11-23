@@ -1,28 +1,119 @@
 package dev.tr7zw.entityculling;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.logisticscraft.occlusionculling.OcclusionCullingInstance;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.util.text.ChatType;
+import net.minecraft.util.text.TextComponentString;
 import net.ornithemc.osl.entrypoints.api.client.ClientModInitializer;
 import net.ornithemc.osl.keybinds.api.KeybindEvents;
 import net.ornithemc.osl.keybinds.api.KeybindRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class EntityCullingMod extends EntityCullingModBase implements ClientModInitializer {
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
-    public EntityCullingMod() {
-        try {
-            Class clientClass = net.minecraft.client.Minecraft.class;
-        } catch (Throwable ex) {
-            System.out.println("EntityCulling Mod installed on a Server. Going to sleep.");
-            return;
+public class EntityCullingMod implements ClientModInitializer {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EntityCullingMod.class);
+
+    public static EntityCullingMod instance;
+    public OcclusionCullingInstance culling;
+    public boolean debugHitboxes = false;
+    public static boolean enabled = true; // public static to make it faster for the jvm
+    public CullTask cullTask;
+    private Thread cullThread;
+    protected KeyBinding keybind = new KeyBinding("key.entityculling.toggle", -1, "EntityCulling");
+    protected boolean pressed = false;
+	
+    public Config config;
+    private final File settingsFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), "entityculling.json");
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	
+	//stats
+	public int renderedBlockEntities = 0;
+	public int skippedBlockEntities = 0;
+	public int renderedEntities = 0;
+	public int skippedEntities = 0;
+	//public int tickedEntities = 0;
+	//public int skippedEntityTicks = 0;
+
+	public void onInitialize() {
+        if (settingsFile.exists()) {
+            try {
+                config = gson.fromJson(new String(Files.readAllBytes(settingsFile.toPath()), StandardCharsets.UTF_8),
+                        Config.class);
+            } catch (Exception ex) {
+                LOGGER.error("Error while loading config! Creating a new one!", ex);
+            }
         }
-        onInitialize();
-    }
+        if (config == null) {
+            config = new Config();
+            writeConfig();
+        } else {
+            if(ConfigUpgrader.upgradeConfig(config)) {
+                writeConfig(); // Config got modified
+            }
+        }
+        culling = new OcclusionCullingInstance(config.tracingDistance, new Provider());
+        cullTask = new CullTask(culling, config.blockEntityWhitelist);
 
-    @Override
-    public void initModloader() {
+		cullThread = new Thread(cullTask, "CullThread");
+		cullThread.setUncaughtExceptionHandler((thread, ex) -> {
+			LOGGER.error("The CullingThread has crashed! Please report the following stacktrace!", ex);
+		});
+        LOGGER.info("Starting CullingThread");
+		cullThread.start();
+	}
+	
+    public void writeConfig() {
+        if (settingsFile.exists())
+            settingsFile.delete();
+        try {
+            settingsFile.getParentFile().mkdirs();
+            Files.write(settingsFile.toPath(), gson.toJson(config).getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+    }
+    
+    public void worldTick() {
+        cullTask.requestCull = true;
+    }
+    
+    public void clientTick() {
+        if (keybind.isKeyDown()) {
+            if (pressed)
+                return;
+            pressed = true;
+            enabled = !enabled;
+            EntityPlayerSP player = Minecraft.getMinecraft().player;
+            if(enabled) {
+                if (player != null) {
+                    Minecraft.getMinecraft().ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString("Culling on"));
+                }
+            } else {
+                if (player != null) {
+                    Minecraft.getMinecraft().ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString("Culling off"));
+                }
+            }
+        } else {
+            pressed = false;
+        }
+        cullTask.requestCull = true;
     }
 
     @Override
     public void initClient() {
-        KeybindEvents.REGISTER_KEYBINDS.register(() -> KeybindRegistry.register(keybind));
+        instance = this;
 
+        KeybindEvents.REGISTER_KEYBINDS.register(() -> KeybindRegistry.register(keybind));
     }
 }
