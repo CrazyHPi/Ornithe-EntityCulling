@@ -1,24 +1,24 @@
 {
 	"schemaVersion": 1,
-	"id": "example_mod",
+	"id": "entityculling",
 	"version": "${version}",
-	"name": "Example mod",
-	"description": "A template for ornithe mod loader.",
+	"name": "EntityCulling",
+	"description": "Using async raytracing to hide Tile-/Entities that are hidden behind solid blocks.\n",
 	"authors": [
+		"tr7zw",
 		"CrazyH"
 	],
 	"contact": {
 		"homepage": "https://github.com/CrazyHPi/ornithe-template",
 		"sources": "https://github.com/CrazyHPi/ornithe-template"
 	},
-	"license": "LGPL-3.0-or-later",
+	"license": "tr7zw Protective License",
 	"icon": "assets/example/icon.png",
 	"environment": "*",
 	"entrypoints": {
-      "preLaunch" : ["xyz.crazyh.example.ExampleMod::init"]
 	},
 	"mixins": [
-		"example_mod.mixins.json"
+		"entityculling.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.13.3",
