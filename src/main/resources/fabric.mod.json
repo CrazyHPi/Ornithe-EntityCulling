@@ -13,7 +13,7 @@
 		"sources": "https://github.com/CrazyHPi/ornithe-template"
 	},
 	"license": "tr7zw Protective License",
-	"icon": "assets/example/icon.png",
+	"icon": "assets/entityculling/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"client-init": [
